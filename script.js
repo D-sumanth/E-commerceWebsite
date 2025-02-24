@@ -1,0 +1,95 @@
+// Header scroll effect
+window.addEventListener("scroll", () => {
+  const header = document.querySelector(".header");
+  if (window.scrollY > 50) {
+    header.style.background = "rgba(255, 255, 255, 0.95)";
+    header.style.boxShadow = "0 2px 10px rgba(78, 46, 131, 0.1)";
+  } else {
+    header.style.background = "var(--white)";
+    header.style.boxShadow = "none";
+  }
+});
+
+// Product animation on scroll
+const observerOptions = {
+  threshold: 0.1,
+};
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry) => {
+    if (entry.isIntersecting) {
+      entry.target.style.opacity = "1";
+      entry.target.style.transform = "translateY(0)";
+    }
+  });
+}, observerOptions);
+
+document.querySelectorAll(".product-card").forEach((card) => {
+  card.style.opacity = "0";
+  card.style.transform = "translateY(20px)";
+  card.style.transition = "all 0.5s ease";
+  observer.observe(card);
+});
+
+// Featured Items Animation
+const featuredItems = document.querySelectorAll(".featured-item");
+let delay = 0;
+
+const featuredObserver = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.style.animation = `fadeInUp 0.6s ease ${delay}s forwards`;
+        delay += 0.2;
+        featuredObserver.unobserve(entry.target);
+      }
+    });
+  },
+  {
+    threshold: 0.1,
+  }
+);
+
+featuredItems.forEach((item) => {
+  featuredObserver.observe(item);
+});
+
+// Reset delay when all items have been animated
+featuredObserver.observe(document.querySelector(".featured-collection"), {
+  callback: () => {
+    delay = 0;
+  },
+});
+
+// Wishlist button functionality
+document.querySelectorAll(".add-wishlist").forEach((button) => {
+  button.addEventListener("click", function () {
+    const icon = this.querySelector("i");
+    icon.classList.toggle("far");
+    icon.classList.toggle("fas");
+
+    // Add animation class
+    this.classList.add("clicked");
+    setTimeout(() => {
+      this.classList.remove("clicked");
+    }, 300);
+  });
+});
+
+// Slideshow functionality
+function initSlideshow() {
+  const slides = document.querySelector(".slides");
+  let currentSlide = 0;
+  const totalSlides = 4;
+
+  function nextSlide() {
+    currentSlide = (currentSlide + 1) % totalSlides;
+    slides.style.transform = `translateX(-${currentSlide * 25}%)`;
+  }
+
+  // Change slide every 4 seconds
+  setInterval(nextSlide, 4000);
+}
+
+// Initialize slideshow when the page loads
+document.addEventListener("DOMContentLoaded", initSlideshow);
